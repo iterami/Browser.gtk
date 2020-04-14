@@ -107,6 +107,46 @@ void startup(GtkApplication* app, gpointer data){
       FALSE,
       0
     );
+    button_toolbar_back = gtk_button_new_with_label("←");
+    gtk_box_pack_start(
+      GTK_BOX(toolbar),
+      button_toolbar_back,
+      FALSE,
+      FALSE,
+      0
+    );
+    button_toolbar_forward = gtk_button_new_with_label("→");
+    gtk_box_pack_start(
+      GTK_BOX(toolbar),
+      button_toolbar_forward,
+      FALSE,
+      FALSE,
+      0
+    );
+    button_toolbar_reload = gtk_button_new_with_label("⟳");
+    gtk_box_pack_start(
+      GTK_BOX(toolbar),
+      button_toolbar_reload,
+      FALSE,
+      FALSE,
+      0
+    );
+    button_toolbar_stop = gtk_button_new_with_label("X");
+    gtk_box_pack_start(
+      GTK_BOX(toolbar),
+      button_toolbar_stop,
+      FALSE,
+      FALSE,
+      0
+    );
+    entry_toolbar_address = gtk_entry_new();
+    gtk_box_pack_start(
+      GTK_BOX(toolbar),
+      entry_toolbar_address,
+      TRUE,
+      TRUE,
+      0
+    );
 
     // Add everything to a box.
     box = gtk_box_new(
