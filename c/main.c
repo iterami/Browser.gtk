@@ -36,6 +36,80 @@ int main(int argc, char **argv){
     return status;
 }
 
+void menu_closetab(void){
+    int page = gtk_notebook_get_current_page(notebook);
+
+    if(page <= 0){
+        return;
+    }
+
+    gtk_notebook_remove_page(
+      notebook,
+      page
+    );
+}
+
+void menu_movetab(const gint movement){
+    int page = gtk_notebook_get_current_page(notebook);
+
+    if(page == 0){
+        return;
+    }
+
+    int position = page + movement;
+
+    if(position <= 1){
+        position = 1;
+
+    }else{
+        int pages = gtk_notebook_get_n_pages(notebook);
+
+        if(position >= pages){
+            position = pages - 1;
+        }
+    }
+
+    gtk_notebook_reorder_child(
+      notebook,
+      gtk_notebook_get_nth_page(
+        notebook,
+        gtk_notebook_get_current_page(notebook)
+      ),
+      position
+    );
+}
+
+void menu_newtab(const gchar *title){
+    // Append and show.
+    gtk_notebook_append_page(
+      notebook,
+      new_scrolled_window(),
+      gtk_label_new(title)
+    );
+    gtk_widget_show_all(window);
+    gtk_notebook_set_current_page(
+      notebook,
+      gtk_notebook_get_n_pages(notebook) - 1
+    );
+    gtk_widget_grab_focus(entry_toolbar_address);
+}
+
+GtkWidget* new_scrolled_window(void){
+    GtkWidget *scrolled_window;
+
+    scrolled_window = gtk_scrolled_window_new(
+      NULL,
+      NULL
+    );
+    gtk_scrolled_window_set_policy(
+      GTK_SCROLLED_WINDOW(scrolled_window),
+      GTK_POLICY_AUTOMATIC,
+      GTK_POLICY_AUTOMATIC
+    );
+
+    return scrolled_window;
+}
+
 void startup(GtkApplication* app, gpointer data){
     GtkAccelGroup *accelgroup;
     GtkWidget *box;
@@ -80,6 +154,68 @@ void startup(GtkApplication* app, gpointer data){
     gtk_menu_item_set_submenu(
       GTK_MENU_ITEM(menuitem_menu),
       menu_menu
+    );
+    gtk_add_menuitem(
+      menu_menu,
+      "_New Tab",
+      accelgroup,
+      KEY_NEWTAB,
+      GDK_CONTROL_MASK,
+      G_CALLBACK(menu_newtab),
+      "NEW TAB"
+    );
+    gtk_menu_shell_append(
+      GTK_MENU_SHELL(menu_menu),
+      gtk_separator_menu_item_new()
+    );
+    gtk_add_menuitem(
+      menu_menu,
+      "_Next Tab",
+      accelgroup,
+      KEY_NEXTTAB,
+      GDK_CONTROL_MASK,
+      G_CALLBACK(gtk_notebook_next_page),
+      GTK_WIDGET(notebook)
+    );
+    gtk_add_menuitem(
+      menu_menu,
+      "_Previous Tab",
+      accelgroup,
+      KEY_PREVIOUSTAB,
+      GDK_CONTROL_MASK,
+      G_CALLBACK(gtk_notebook_prev_page),
+      GTK_WIDGET(notebook)
+    );
+    gtk_add_menuitem(
+      menu_menu,
+      "Move Tab _Left",
+      accelgroup,
+      KEY_MOVETABLEFT,
+      GDK_CONTROL_MASK | GDK_SHIFT_MASK,
+      G_CALLBACK(menu_movetab),
+      (gpointer)-1
+    );
+    gtk_add_menuitem(
+      menu_menu,
+      "Move Tab _Right",
+      accelgroup,
+      KEY_MOVETABRIGHT,
+      GDK_CONTROL_MASK | GDK_SHIFT_MASK,
+      G_CALLBACK(menu_movetab),
+      (gpointer)1
+    );
+    gtk_menu_shell_append(
+      GTK_MENU_SHELL(menu_menu),
+      gtk_separator_menu_item_new()
+    );
+    gtk_add_menuitem(
+      menu_menu,
+      "_Close Tab",
+      accelgroup,
+      KEY_CLOSETAB,
+      GDK_CONTROL_MASK,
+      G_CALLBACK(menu_closetab),
+      NULL
     );
     gtk_add_menuitem(
       menu_menu,
@@ -171,6 +307,9 @@ void startup(GtkApplication* app, gpointer data){
       GTK_CONTAINER(window),
       box
     );
+
+    // Setup home tab.
+    menu_newtab(HOME_TAB_TITLE);
 
     gtk_widget_show_all(window);
 }
