@@ -91,7 +91,10 @@ void menu_newtab(const gchar *title){
       notebook,
       gtk_notebook_get_n_pages(notebook) - 1
     );
-    gtk_widget_grab_focus(entry_toolbar_address);
+    gtk_widget_grab_focus(entry_toolbar_path);
+}
+
+void menu_openfile(void){
 }
 
 GtkWidget* new_scrolled_window(void){
@@ -163,6 +166,15 @@ void startup(GtkApplication* app, gpointer data){
       GDK_CONTROL_MASK,
       G_CALLBACK(menu_newtab),
       "NEW TAB"
+    );
+    gtk_add_menuitem(
+      menu_menu,
+      "_Open File...",
+      accelgroup,
+      KEY_OPEN,
+      GDK_CONTROL_MASK,
+      G_CALLBACK(menu_openfile),
+      NULL
     );
     gtk_menu_shell_append(
       GTK_MENU_SHELL(menu_menu),
@@ -275,13 +287,45 @@ void startup(GtkApplication* app, gpointer data){
       FALSE,
       0
     );
-    entry_toolbar_address = gtk_entry_new();
+    entry_toolbar_path = gtk_entry_new();
     gtk_box_pack_start(
       GTK_BOX(toolbar),
-      entry_toolbar_address,
+      entry_toolbar_path,
       TRUE,
       TRUE,
       0
+    );
+
+    // Connect everything.
+    g_signal_connect(
+      entry_toolbar_path,
+      "activate",
+      G_CALLBACK(toolbar_path),
+      NULL
+    );
+    g_signal_connect(
+      button_toolbar_back,
+      "clicked",
+      G_CALLBACK(toolbar_back),
+      NULL
+    );
+    g_signal_connect(
+      button_toolbar_forward,
+      "clicked",
+      G_CALLBACK(toolbar_forward),
+      NULL
+    );
+    g_signal_connect(
+      button_toolbar_reload,
+      "clicked",
+      G_CALLBACK(toolbar_reload),
+      NULL
+    );
+    g_signal_connect(
+      button_toolbar_stop,
+      "clicked",
+      G_CALLBACK(toolbar_stop),
+      NULL
     );
 
     // Add everything to a box.
@@ -315,4 +359,19 @@ void startup(GtkApplication* app, gpointer data){
 }
 
 void tab_switch(GtkNotebook *notebook, GtkWidget *page_content, guint page, gpointer data){
+}
+
+void toolbar_back(void){
+}
+
+void toolbar_forward(void){
+}
+
+void toolbar_path(void){
+}
+
+void toolbar_reload(void){
+}
+
+void toolbar_stop(void){
 }
