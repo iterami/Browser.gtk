@@ -95,6 +95,35 @@ void menu_newtab(const gchar *title){
 }
 
 void menu_openfile(void){
+    GtkFileChooser *chooser;
+    GtkWidget *dialog_open;
+
+    dialog_open = gtk_file_chooser_dialog_new(
+      "Open File...",
+      GTK_WINDOW(window),
+      GTK_FILE_CHOOSER_ACTION_OPEN,
+      "_Cancel",
+      GTK_RESPONSE_CANCEL,
+      "_Open",
+      GTK_RESPONSE_ACCEPT,
+      NULL
+    );
+    chooser = GTK_FILE_CHOOSER(dialog_open);
+    gtk_file_chooser_set_show_hidden(
+      chooser,
+      TRUE
+    );
+
+    if(gtk_dialog_run(GTK_DIALOG(dialog_open)) == GTK_RESPONSE_ACCEPT){
+        char *filename;
+
+        filename = gtk_file_chooser_get_filename(chooser);
+        menu_newtab(g_path_get_basename(filename));
+
+        g_free(filename);
+    }
+
+    gtk_widget_destroy(dialog_open);
 }
 
 GtkWidget* new_scrolled_window(void){
