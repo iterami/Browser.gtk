@@ -80,16 +80,35 @@ void menu_movetab(const gint movement){
 }
 
 void menu_newtab(const gchar *title){
-    // Append and show.
+    int page = gtk_notebook_get_n_pages(notebook);
+
     gtk_notebook_append_page(
       notebook,
       new_scrolled_window(),
       gtk_label_new(title)
     );
+
+    gtk_notebook_set_tab_label_text(
+      notebook,
+      gtk_notebook_get_nth_page(
+        notebook,
+        page
+      ),
+      title
+    );
+    gtk_notebook_set_menu_label_text(
+      notebook,
+      gtk_notebook_get_nth_page(
+        notebook,
+        page
+      ),
+      title
+    );
+
     gtk_widget_show_all(window);
     gtk_notebook_set_current_page(
       notebook,
-      gtk_notebook_get_n_pages(notebook) - 1
+      page
     );
     gtk_widget_grab_focus(entry_toolbar_path);
 }
@@ -118,7 +137,30 @@ void menu_openfile(void){
         char *filename;
 
         filename = gtk_file_chooser_get_filename(chooser);
-        menu_newtab(g_path_get_basename(filename));
+        menu_newtab("NEW TAB");
+
+        int page = gtk_notebook_get_current_page(notebook);
+
+        gtk_notebook_set_tab_label_text(
+          notebook,
+          gtk_notebook_get_nth_page(
+            notebook,
+            page
+          ),
+          g_path_get_basename(filename)
+        );
+        gtk_notebook_set_menu_label_text(
+          notebook,
+          gtk_notebook_get_nth_page(
+            notebook,
+            page
+          ),
+          filename
+        );
+        gtk_entry_set_text(
+          GTK_ENTRY(entry_toolbar_path),
+          filename
+        );
 
         g_free(filename);
     }
@@ -388,6 +430,20 @@ void startup(GtkApplication* app, gpointer data){
 }
 
 void tab_switch(GtkNotebook *notebook, GtkWidget *page_content, guint page, gpointer data){
+    gtk_entry_set_text(
+      GTK_ENTRY(entry_toolbar_path),
+      gtk_notebook_get_menu_label_text(
+        notebook,
+        page_content
+      )
+    );
+    gtk_window_set_title(
+      GTK_WINDOW(window),
+      gtk_notebook_get_tab_label_text(
+        notebook,
+        page_content
+      )
+    );
 }
 
 void toolbar_back(void){
