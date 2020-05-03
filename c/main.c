@@ -82,27 +82,11 @@ void menu_movetab(const gint movement){
 void menu_newtab(const gchar *title){
     int page = gtk_notebook_get_n_pages(notebook);
 
-    gtk_notebook_append_page(
+    gtk_notebook_append_page_menu(
       notebook,
       new_scrolled_window(),
+      gtk_label_new(title),
       gtk_label_new(title)
-    );
-
-    gtk_notebook_set_tab_label_text(
-      notebook,
-      gtk_notebook_get_nth_page(
-        notebook,
-        page
-      ),
-      title
-    );
-    gtk_notebook_set_menu_label_text(
-      notebook,
-      gtk_notebook_get_nth_page(
-        notebook,
-        page
-      ),
-      title
     );
 
     gtk_widget_show_all(window);
