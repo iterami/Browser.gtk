@@ -79,15 +79,45 @@ void menu_movetab(const gint movement){
     );
 }
 
-void menu_newtab(const gchar *title){
+void menu_newtab(const gchar *title, gint type){
     int page = gtk_notebook_get_n_pages(notebook);
 
-    gtk_notebook_append_page_menu(
-      notebook,
-      new_scrolled_window(),
-      gtk_label_new(title),
-      gtk_label_new(title)
-    );
+    // Files tab.
+    if(type == 0){
+        gtk_notebook_append_page_menu(
+          notebook,
+          tab_new_files(),
+          gtk_label_new(title),
+          gtk_label_new(title)
+        );
+
+    // Text tab.
+    }else if(type == 1){
+        gtk_notebook_append_page_menu(
+          notebook,
+          tab_new_text(),
+          gtk_label_new(title),
+          gtk_label_new(title)
+        );
+
+    // Web tab.
+    }else if(type == 2){
+        gtk_notebook_append_page_menu(
+          notebook,
+          tab_new_web(),
+          gtk_label_new(title),
+          gtk_label_new(title)
+        );
+
+    // Default tab.
+    }else{
+        gtk_notebook_append_page_menu(
+          notebook,
+          tab_new_default(),
+          gtk_label_new(title),
+          gtk_label_new(title)
+        );
+    }
 
     gtk_widget_show_all(window);
     gtk_notebook_set_current_page(
@@ -126,7 +156,10 @@ void menu_openfile(void){
         char *filename;
 
         filename = gtk_file_chooser_get_filename(chooser);
-        menu_newtab("NEW TAB");
+        menu_newtab(
+          "NEW TAB",
+          1
+        );
 
         int page = gtk_notebook_get_current_page(notebook);
 
@@ -413,18 +446,28 @@ void startup(GtkApplication* app, gpointer data){
     );
 
     // Setup home tab.
-    menu_newtab(HOME_TAB_TITLE);
+    menu_newtab(
+      HOME_TAB_TITLE,
+      0
+    );
 
     gtk_widget_show_all(window);
 }
 
-void tab_new_files(void){
+GtkWidget* tab_new_default(void){
+    return new_scrolled_window();
 }
 
-void tab_new_text(void){
+GtkWidget* tab_new_files(void){
+    return new_scrolled_window();
 }
 
-void tab_new_web(void){
+GtkWidget* tab_new_text(void){
+    return new_scrolled_window();
+}
+
+GtkWidget* tab_new_web(void){
+    return new_scrolled_window();
 }
 
 void tab_switch(GtkNotebook *notebook, GtkWidget *page_content, guint page, gpointer data){
