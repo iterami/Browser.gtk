@@ -112,14 +112,14 @@ void menu_openfile(void){
       NULL
     );
     chooser = GTK_FILE_CHOOSER(dialog_open);
+    gtk_file_chooser_set_show_hidden(
+      chooser,
+      TRUE
+    );
     gtk_file_chooser_set_file(
       chooser,
       g_file_new_for_path(gtk_entry_get_text(GTK_ENTRY(entry_toolbar_path))),
       NULL
-    );
-    gtk_file_chooser_set_show_hidden(
-      chooser,
-      TRUE
     );
 
     if(gtk_dialog_run(GTK_DIALOG(dialog_open)) == GTK_RESPONSE_ACCEPT){
