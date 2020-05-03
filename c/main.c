@@ -418,6 +418,15 @@ void startup(GtkApplication* app, gpointer data){
     gtk_widget_show_all(window);
 }
 
+void tab_new_files(void){
+}
+
+void tab_new_text(void){
+}
+
+void tab_new_web(void){
+}
+
 void tab_switch(GtkNotebook *notebook, GtkWidget *page_content, guint page, gpointer data){
     gtk_entry_set_text(
       GTK_ENTRY(entry_toolbar_path),
