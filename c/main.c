@@ -208,12 +208,6 @@ void startup(GtkApplication* app, gpointer data){
       notebook,
       FALSE
     );
-    g_signal_connect_after(
-      notebook,
-      "switch-page",
-      G_CALLBACK(tab_switch),
-      NULL
-    );
 
     // Setup menu items.
     menubar = gtk_menu_bar_new();
@@ -396,6 +390,12 @@ void startup(GtkApplication* app, gpointer data){
       button_toolbar_stop,
       "clicked",
       G_CALLBACK(toolbar_stop),
+      NULL
+    );
+    g_signal_connect_after(
+      notebook,
+      "switch-page",
+      G_CALLBACK(tab_switch),
       NULL
     );
 
