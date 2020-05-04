@@ -476,7 +476,32 @@ GtkWidget* tab_new_default(void){
 }
 
 GtkWidget* tab_new_files(void){
-    return new_scrolled_window();
+    GtkWidget *places;
+
+    places = gtk_places_sidebar_new();
+
+    gtk_widget_set_hexpand(
+      places,
+      FALSE
+    );
+    gtk_places_sidebar_set_show_desktop(
+      GTK_PLACES_SIDEBAR(places),
+      TRUE
+    );
+    gtk_places_sidebar_set_show_recent(
+      GTK_PLACES_SIDEBAR(places),
+      FALSE
+    );
+    gtk_places_sidebar_set_show_trash(
+      GTK_PLACES_SIDEBAR(places),
+      TRUE
+    );
+    gtk_places_sidebar_set_open_flags(
+      GTK_PLACES_SIDEBAR(places),
+      GTK_PLACES_OPEN_NORMAL
+    );
+
+    return places;
 }
 
 GtkWidget* tab_new_text(void){
