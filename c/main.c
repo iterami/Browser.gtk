@@ -206,6 +206,23 @@ GtkWidget* new_scrolled_window(void){
     return scrolled_window;
 }
 
+GtkWidget* new_textview(void){
+    GtkWidget *text_view;
+
+    text_view = gtk_text_view_new_with_buffer(gtk_text_buffer_new(NULL));
+
+    gtk_text_view_set_monospace(
+      GTK_TEXT_VIEW(text_view),
+      TRUE
+    );
+    gtk_text_view_set_wrap_mode(
+      GTK_TEXT_VIEW(text_view),
+      GTK_WRAP_WORD
+    );
+
+    return text_view;
+}
+
 void startup(GtkApplication* app, gpointer data){
     GtkAccelGroup *accelgroup;
     GtkWidget *box;
@@ -463,7 +480,15 @@ GtkWidget* tab_new_files(void){
 }
 
 GtkWidget* tab_new_text(void){
-    return new_scrolled_window();
+    GtkWidget *scrolled_window;
+
+    scrolled_window = new_scrolled_window();
+    gtk_container_add(
+      GTK_CONTAINER(scrolled_window),
+      new_textview()
+    );
+
+    return scrolled_window;
 }
 
 GtkWidget* tab_new_web(void){

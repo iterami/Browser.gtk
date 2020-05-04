@@ -22,6 +22,7 @@ void menu_movetab(const gint movement);
 void menu_newtab(const gchar *title, gint type);
 void menu_openfile(void);
 GtkWidget* new_scrolled_window(void);
+GtkWidget* new_textview(void);
 void startup(GtkApplication* app, gpointer data);
 GtkWidget* tab_new_default(void);
 GtkWidget* tab_new_files(void);
