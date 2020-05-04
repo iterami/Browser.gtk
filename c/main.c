@@ -206,7 +206,7 @@ GtkWidget* new_scrolled_window(void){
     return scrolled_window;
 }
 
-GtkWidget* new_textview(void){
+GtkWidget* new_text_view(void){
     GtkWidget *text_view;
 
     text_view = gtk_text_view_new_with_buffer(gtk_text_buffer_new(NULL));
@@ -485,7 +485,7 @@ GtkWidget* tab_new_text(void){
     scrolled_window = new_scrolled_window();
     gtk_container_add(
       GTK_CONTAINER(scrolled_window),
-      new_textview()
+      new_text_view()
     );
 
     return scrolled_window;
