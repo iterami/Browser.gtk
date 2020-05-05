@@ -472,7 +472,30 @@ void startup(GtkApplication* app, gpointer data){
 }
 
 GtkWidget* tab_new_default(void){
-    return new_scrolled_window();
+    GtkWidget *default_tab_list;
+    GtkWidget *default_tab_files;
+    GtkWidget *default_tab_text;
+    GtkWidget *default_tab_web;
+
+    default_tab_list = gtk_list_box_new();
+    default_tab_files = gtk_button_new_with_label("Files Tab");
+    default_tab_text = gtk_button_new_with_label("Text Tab");
+    default_tab_web = gtk_button_new_with_label("Web Tab");
+
+    gtk_container_add(
+      GTK_CONTAINER(default_tab_list),
+      default_tab_files
+    );
+    gtk_container_add(
+      GTK_CONTAINER(default_tab_list),
+      default_tab_text
+    );
+    gtk_container_add(
+      GTK_CONTAINER(default_tab_list),
+      default_tab_web
+    );
+
+    return default_tab_list;
 }
 
 GtkWidget* tab_new_files(void){
