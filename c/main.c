@@ -153,7 +153,9 @@ void menu_openfile(void){
     );
 
     if(gtk_dialog_run(GTK_DIALOG(dialog_open)) == GTK_RESPONSE_ACCEPT){
+        gchar *content;
         char *filename;
+        gssize length;
 
         filename = gtk_file_chooser_get_filename(chooser);
         menu_newtab(
@@ -161,29 +163,50 @@ void menu_openfile(void){
           1
         );
 
-        int page = gtk_notebook_get_current_page(notebook);
+        if(g_file_get_contents(
+            filename,
+            &content,
+            &length,
+            NULL
+          ) && g_utf8_validate(
+            content,
+            length,
+            NULL
+          )){
+            GtkTextBuffer *textbuffer;
+            int page = gtk_notebook_get_current_page(notebook);
 
-        gtk_notebook_set_tab_label_text(
-          notebook,
-          gtk_notebook_get_nth_page(
-            notebook,
-            page
-          ),
-          g_path_get_basename(filename)
-        );
-        gtk_notebook_set_menu_label_text(
-          notebook,
-          gtk_notebook_get_nth_page(
-            notebook,
-            page
-          ),
-          filename
-        );
-        gtk_entry_set_text(
-          GTK_ENTRY(entry_toolbar_path),
-          filename
-        );
+            textbuffer = tab_get_text_buffer(page);
 
+            gtk_notebook_set_tab_label_text(
+              notebook,
+              gtk_notebook_get_nth_page(
+                notebook,
+                page
+              ),
+              g_path_get_basename(filename)
+            );
+            gtk_notebook_set_menu_label_text(
+              notebook,
+              gtk_notebook_get_nth_page(
+                notebook,
+                page
+              ),
+              filename
+            );
+            gtk_entry_set_text(
+              GTK_ENTRY(entry_toolbar_path),
+              filename
+            );
+
+            gtk_text_buffer_set_text(
+              textbuffer,
+              content,
+              length
+            );
+        }
+
+        g_free(content);
         g_free(filename);
     }
 
@@ -471,6 +494,34 @@ void startup(GtkApplication* app, gpointer data){
     gtk_widget_show_all(window);
 }
 
+GList* tab_get_children(int page){
+    if(page < 0){
+        page = gtk_notebook_get_current_page(notebook);
+    }
+
+    return gtk_container_get_children(
+      GTK_CONTAINER(gtk_notebook_get_nth_page(
+        notebook,
+        page
+      ))
+    );
+}
+
+GtkTextBuffer* tab_get_text_buffer(int page){
+    if(page < 0){
+        page = gtk_notebook_get_current_page(notebook);
+    }
+
+    return gtk_text_view_get_buffer(
+      GTK_TEXT_VIEW(gtk_bin_get_child(
+        GTK_BIN(g_list_nth_data(
+          tab_get_children(page),
+          0
+        ))
+      ))
+    );
+}
+
 GtkWidget* tab_new_default(void){
     GtkWidget *default_tab_list;
     GtkWidget *default_tab_files;
@@ -499,10 +550,15 @@ GtkWidget* tab_new_default(void){
 }
 
 GtkWidget* tab_new_files(void){
+    GtkWidget *box;
     GtkWidget *places;
 
-    places = gtk_places_sidebar_new();
+    box = gtk_box_new(
+      GTK_ORIENTATION_HORIZONTAL,
+      1
+    );
 
+    places = gtk_places_sidebar_new();
     gtk_widget_set_hexpand(
       places,
       FALSE
@@ -524,23 +580,59 @@ GtkWidget* tab_new_files(void){
       GTK_PLACES_OPEN_NORMAL
     );
 
-    return places;
+    gtk_box_pack_start(
+      GTK_BOX(box),
+      places,
+      TRUE,
+      TRUE,
+      0
+    );
+
+    return box;
 }
 
 GtkWidget* tab_new_text(void){
+    GtkWidget *box;
     GtkWidget *scrolled_window;
 
+    box = gtk_box_new(
+      GTK_ORIENTATION_HORIZONTAL,
+      1
+    );
     scrolled_window = new_scrolled_window();
     gtk_container_add(
       GTK_CONTAINER(scrolled_window),
       new_text_view()
     );
+    gtk_box_pack_start(
+      GTK_BOX(box),
+      scrolled_window,
+      TRUE,
+      TRUE,
+      0
+    );
 
-    return scrolled_window;
+    return box;
 }
 
 GtkWidget* tab_new_web(void){
-    return new_scrolled_window();
+    GtkWidget *box;
+    GtkWidget *scrolled_window;
+
+    box = gtk_box_new(
+      GTK_ORIENTATION_HORIZONTAL,
+      1
+    );
+    scrolled_window = new_scrolled_window();
+    gtk_box_pack_start(
+      GTK_BOX(box),
+      scrolled_window,
+      TRUE,
+      TRUE,
+      0
+    );
+
+    return box;
 }
 
 void tab_switch(GtkNotebook *notebook, GtkWidget *page_content, guint page, gpointer data){
