@@ -213,6 +213,12 @@ void menu_openfile(void){
     gtk_widget_destroy(dialog_open);
 }
 
+void menu_save(void){
+}
+
+void menu_saveas(void){
+}
+
 GtkWidget* new_scrolled_window(void){
     GtkWidget *scrolled_window;
 
@@ -301,6 +307,28 @@ void startup(GtkApplication* app, gpointer data){
       KEY_OPEN,
       GDK_CONTROL_MASK,
       G_CALLBACK(menu_openfile),
+      NULL
+    );
+    gtk_menu_shell_append(
+      GTK_MENU_SHELL(menu_menu),
+      gtk_separator_menu_item_new()
+    );
+    gtk_add_menuitem(
+      menu_menu,
+      "_Save",
+      accelgroup,
+      KEY_SAVE,
+      GDK_CONTROL_MASK,
+      G_CALLBACK(menu_save),
+      NULL
+    );
+    gtk_add_menuitem(
+      menu_menu,
+      "Save _As...",
+      accelgroup,
+      KEY_SAVE,
+      GDK_CONTROL_MASK | GDK_SHIFT_MASK,
+      G_CALLBACK(menu_saveas),
       NULL
     );
     gtk_menu_shell_append(

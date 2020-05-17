@@ -8,6 +8,7 @@
 #define KEY_NEXTTAB GDK_KEY_equal
 #define KEY_OPEN GDK_KEY_o
 #define KEY_PREVIOUSTAB GDK_KEY_minus
+#define KEY_SAVE GDK_KEY_s
 
 GtkNotebook *notebook;
 GtkWidget *button_toolbar_back;
@@ -21,6 +22,8 @@ void menu_closetab(void);
 void menu_movetab(const gint movement);
 void menu_newtab(const gchar *title, gint type);
 void menu_openfile(void);
+void menu_save(void);
+void menu_saveas(void);
 GtkWidget* new_scrolled_window(void);
 GtkWidget* new_text_view(void);
 void startup(GtkApplication* app, gpointer data);
