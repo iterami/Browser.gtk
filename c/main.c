@@ -198,6 +198,10 @@ void menu_openfile(void){
               GTK_ENTRY(entry_toolbar_path),
               filename
             );
+            gtk_window_set_title(
+              GTK_WINDOW(window),
+              g_path_get_basename(filename)
+            );
 
             gtk_text_buffer_set_text(
               textbuffer,
