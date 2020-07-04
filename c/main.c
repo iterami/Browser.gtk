@@ -39,7 +39,7 @@ int main(int argc, char **argv){
 void menu_closetab(void){
     int page = gtk_notebook_get_current_page(notebook);
 
-    if(page <= 0){
+    if(page < 1){
         return;
     }
 
@@ -52,7 +52,7 @@ void menu_closetab(void){
 void menu_movetab(const gint movement){
     int page = gtk_notebook_get_current_page(notebook);
 
-    if(page == 0){
+    if(page < 1){
         return;
     }
 
@@ -81,41 +81,55 @@ void menu_movetab(const gint movement){
 
 void menu_newtab(const gchar *title, gint type){
     int page = gtk_notebook_get_n_pages(notebook);
+    GtkWidget *menu_label;
+    GtkWidget *title_label;
 
     // Files tab.
     if(type == 0){
+        menu_label = gtk_label_new(title);
+        title_label = gtk_label_new(title);
+
         gtk_notebook_append_page_menu(
           notebook,
           tab_new_files(),
-          gtk_label_new(title),
-          gtk_label_new(title)
+          title_label,
+          menu_label
         );
 
     // Text tab.
     }else if(type == 1){
+        menu_label = gtk_label_new(title);
+        title_label = gtk_label_new(title);
+
         gtk_notebook_append_page_menu(
           notebook,
           tab_new_text(),
-          gtk_label_new(title),
-          gtk_label_new(title)
+          title_label,
+          menu_label
         );
 
     // Web tab.
     }else if(type == 2){
+        menu_label = gtk_label_new(title);
+        title_label = gtk_label_new(title);
+
         gtk_notebook_append_page_menu(
           notebook,
           tab_new_web(),
-          gtk_label_new(title),
-          gtk_label_new(title)
+          title_label,
+          menu_label
         );
 
     // Default tab.
     }else{
+        menu_label = gtk_label_new(title);
+        title_label = gtk_label_new(title);
+
         gtk_notebook_append_page_menu(
           notebook,
           tab_new_default(),
-          gtk_label_new(title),
-          gtk_label_new(title)
+          title_label,
+          menu_label
         );
     }
 
@@ -218,9 +232,11 @@ void menu_openfile(void){
 }
 
 void menu_save(void){
+    int type = tab_get_type(-1);
 }
 
 void menu_saveas(void){
+    int type = tab_get_type(-1);
 }
 
 GtkWidget* new_scrolled_window(void){
@@ -552,6 +568,14 @@ GtkTextBuffer* tab_get_text_buffer(int page){
         ))
       ))
     );
+}
+
+int tab_get_type(int page){
+    if(page < 0){
+        page = gtk_notebook_get_current_page(notebook);
+    }
+
+    return -1;
 }
 
 GtkWidget* tab_new_default(void){

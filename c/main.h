@@ -29,6 +29,7 @@ GtkWidget* new_text_view(void);
 void startup(GtkApplication* app, gpointer data);
 GList* tab_get_children(int page);
 GtkTextBuffer* tab_get_text_buffer(int page);
+int tab_get_type(int page);
 GtkWidget* tab_new_default(void);
 GtkWidget* tab_new_files(void);
 GtkWidget* tab_new_text(void);
