@@ -31,6 +31,7 @@ GList* tab_get_children(int page);
 GtkTextBuffer* tab_get_text_buffer(int page);
 int tab_get_type(int page);
 GtkWidget* tab_new_default(void);
+void tab_new_from_default(GtkWidget *widget, GdkEventButton *event, gpointer data);
 GtkWidget* tab_new_files(void);
 GtkWidget* tab_new_text(void);
 GtkWidget* tab_new_web(void);

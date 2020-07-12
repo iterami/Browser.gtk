@@ -589,6 +589,25 @@ GtkWidget* tab_new_default(void){
     default_tab_text = gtk_button_new_with_label("Text Tab");
     default_tab_web = gtk_button_new_with_label("Web Tab");
 
+    g_signal_connect(
+      default_tab_files,
+      "clicked",
+      G_CALLBACK(tab_new_from_default),
+      GINT_TO_POINTER(0)
+    );
+    g_signal_connect(
+      default_tab_text,
+      "clicked",
+      G_CALLBACK(tab_new_from_default),
+      GINT_TO_POINTER(1)
+    );
+    g_signal_connect(
+      default_tab_web,
+      "clicked",
+      G_CALLBACK(tab_new_from_default),
+      GINT_TO_POINTER(2)
+    );
+
     gtk_container_add(
       GTK_CONTAINER(default_tab_list),
       default_tab_files
@@ -603,6 +622,14 @@ GtkWidget* tab_new_default(void){
     );
 
     return default_tab_list;
+}
+
+void tab_new_from_default(GtkWidget *widget, GdkEventButton *event, gpointer data){
+    menu_closetab();
+    menu_newtab(
+      "NEW TAB",
+      GPOINTER_TO_INT(data)
+    );
 }
 
 GtkWidget* tab_new_files(void){
