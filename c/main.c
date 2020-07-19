@@ -81,55 +81,102 @@ void menu_movetab(const gint movement){
 
 void menu_newtab(const gchar *title, gint type){
     int page = gtk_notebook_get_n_pages(notebook);
-    GtkWidget *menu_label;
-    GtkWidget *title_label;
+    GtkWidget *tab_label_container;
+    GtkWidget *tab_label_title;
+    GtkWidget *tab_label_type;
+    GtkWidget *tab_menu_title;
+
+    tab_label_container = gtk_box_new(
+      GTK_ORIENTATION_HORIZONTAL,
+      5
+    );
+    tab_label_title = gtk_label_new(title);
+    tab_label_type = gtk_list_box_new();
+    tab_menu_title = gtk_label_new(title);
+
+    gtk_box_pack_end(
+      GTK_BOX(tab_label_container),
+      tab_label_title,
+      TRUE,
+      TRUE,
+      0
+    );
+    gtk_widget_show(tab_label_title);
 
     // Files tab.
     if(type == 0){
-        menu_label = gtk_label_new(title);
-        title_label = gtk_label_new(title);
+        tab_label_type = gtk_label_new("FILES");
+
+        gtk_box_pack_start(
+          GTK_BOX(tab_label_container),
+          tab_label_type,
+          TRUE,
+          TRUE,
+          0
+        );
 
         gtk_notebook_append_page_menu(
           notebook,
           tab_new_files(),
-          title_label,
-          menu_label
+          tab_label_container,
+          tab_menu_title
         );
 
     // Text tab.
     }else if(type == 1){
-        menu_label = gtk_label_new(title);
-        title_label = gtk_label_new(title);
+        tab_label_type = gtk_label_new("TEXT");
+
+        gtk_box_pack_start(
+          GTK_BOX(tab_label_container),
+          tab_label_type,
+          TRUE,
+          TRUE,
+          0
+        );
 
         gtk_notebook_append_page_menu(
           notebook,
           tab_new_text(),
-          title_label,
-          menu_label
+          tab_label_container,
+          tab_menu_title
         );
 
     // Web tab.
     }else if(type == 2){
-        menu_label = gtk_label_new(title);
-        title_label = gtk_label_new(title);
+        tab_label_type = gtk_label_new("WEB");
+
+        gtk_box_pack_start(
+          GTK_BOX(tab_label_container),
+          tab_label_type,
+          TRUE,
+          TRUE,
+          0
+        );
 
         gtk_notebook_append_page_menu(
           notebook,
           tab_new_web(),
-          title_label,
-          menu_label
+          tab_label_container,
+          tab_menu_title
         );
 
     // Default tab.
     }else{
-        menu_label = gtk_label_new(title);
-        title_label = gtk_label_new(title);
+        tab_label_type = gtk_label_new("DEFAULT");
+
+        gtk_box_pack_start(
+          GTK_BOX(tab_label_container),
+          tab_label_type,
+          TRUE,
+          TRUE,
+          0
+        );
 
         gtk_notebook_append_page_menu(
           notebook,
           tab_new_default(),
-          title_label,
-          menu_label
+          tab_label_container,
+          tab_menu_title
         );
     }
 
@@ -192,20 +239,9 @@ void menu_openfile(void){
 
             textbuffer = tab_get_text_buffer(page);
 
-            gtk_notebook_set_tab_label_text(
-              notebook,
-              gtk_notebook_get_nth_page(
-                notebook,
-                page
-              ),
-              g_path_get_basename(filename)
-            );
-            gtk_notebook_set_menu_label_text(
-              notebook,
-              gtk_notebook_get_nth_page(
-                notebook,
-                page
-              ),
+            tab_update_labels(
+              -1,
+              g_path_get_basename(filename),
               filename
             );
             gtk_entry_set_text(
@@ -233,6 +269,40 @@ void menu_openfile(void){
 
 void menu_save(void){
     int type = tab_get_type(-1);
+
+    if(type != 1){
+        return;
+    }
+
+    gchar *content;
+    GtkTextIter end;
+    GtkTextIter start;
+    GtkTextBuffer *textbuffer;
+
+    textbuffer = tab_get_text_buffer(-1);
+
+    gtk_text_buffer_get_start_iter(
+      textbuffer,
+      &start
+    );
+    gtk_text_buffer_get_end_iter(
+      textbuffer,
+      &end
+    );
+
+    content = gtk_text_buffer_get_text(
+      textbuffer,
+      &start,
+      &end,
+      FALSE
+    );
+    g_file_set_contents(
+      tab_get_menu_label_text(-1),
+      content,
+      -1,
+      NULL
+    );
+    g_free(content);
 }
 
 void menu_saveas(void){
@@ -555,6 +625,20 @@ GList* tab_get_children(int page){
     );
 }
 
+const gchar* tab_get_menu_label_text(int page){
+    if(page < 0){
+        page = gtk_notebook_get_current_page(notebook);
+    }
+
+    return gtk_notebook_get_menu_label_text(
+      notebook,
+      gtk_notebook_get_nth_page(
+        notebook,
+        page
+      )
+    );
+}
+
 GtkTextBuffer* tab_get_text_buffer(int page){
     if(page < 0){
         page = gtk_notebook_get_current_page(notebook);
@@ -573,6 +657,44 @@ GtkTextBuffer* tab_get_text_buffer(int page){
 int tab_get_type(int page){
     if(page < 0){
         page = gtk_notebook_get_current_page(notebook);
+    }
+
+    GtkLabel *tab_label_type;
+
+    GList *tab_label_children = gtk_container_get_children(
+      GTK_CONTAINER(gtk_notebook_get_tab_label(
+        notebook,
+        gtk_notebook_get_nth_page(
+          notebook,
+          page
+        )
+      ))
+    );
+
+    tab_label_type = g_list_nth_data(
+      tab_label_children,
+      0
+    );
+
+    if(g_strcmp0(
+        gtk_label_get_text(tab_label_type),
+        "FILES"
+      ) == 0){
+        return 0;
+    }
+
+    if(g_strcmp0(
+        gtk_label_get_text(tab_label_type),
+        "TEXT"
+      ) == 0){
+        return 1;
+    }
+
+    if(g_strcmp0(
+        gtk_label_get_text(tab_label_type),
+        "WEB"
+      ) == 0){
+        return 2;
     }
 
     return -1;
@@ -732,6 +854,42 @@ void tab_switch(GtkNotebook *notebook, GtkWidget *page_content, guint page, gpoi
         notebook,
         page_content
       )
+    );
+}
+
+void tab_update_labels(int page, gchar* tab_label, gchar* menu_label){
+    if(page < 0){
+        page = gtk_notebook_get_current_page(notebook);
+    }
+
+    GtkLabel *tab_label_title;
+
+    GList *tab_label_children = gtk_container_get_children(
+      GTK_CONTAINER(gtk_notebook_get_tab_label(
+        notebook,
+        gtk_notebook_get_nth_page(
+          notebook,
+          page
+        )
+      ))
+    );
+
+    tab_label_title = g_list_nth_data(
+      tab_label_children,
+      1
+    );
+
+    gtk_label_set_text(
+      tab_label_title,
+      tab_label
+    );
+    gtk_notebook_set_menu_label_text(
+      notebook,
+      gtk_notebook_get_nth_page(
+        notebook,
+        page
+      ),
+      menu_label
     );
 }
 
