@@ -17,7 +17,6 @@ GtkWidget *button_toolbar_reload;
 GtkWidget *button_toolbar_stop;
 GtkWidget *entry_toolbar_path;
 
-void activate(GtkApplication* app, gpointer data);
 void menu_closetab(void);
 void menu_movetab(const gint movement);
 void menu_newtab(const gchar *title, gint type);
